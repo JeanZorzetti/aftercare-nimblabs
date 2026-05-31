@@ -17,6 +17,7 @@ export async function createCheckoutSession(params: { userId: string; email: str
     cancel_url: params.cancelUrl,
     subscription_data: { metadata: { userId: params.userId } },
     metadata: { userId: params.userId },
+    allow_promotion_codes: true, // lets users redeem coupons (early-bird, test 100%-off)
   })
 }
 
