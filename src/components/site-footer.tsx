@@ -33,10 +33,18 @@ export function SiteFooter() {
             </ul>
           </div>
 
-          {/* Legal */}
+          {/* Resources */}
           <div>
-            <p className="text-xs font-semibold uppercase tracking-widest text-[var(--muted-foreground)] mb-3">Legal</p>
+            <p className="text-xs font-semibold uppercase tracking-widest text-[var(--muted-foreground)] mb-3">Resources</p>
             <ul className="space-y-1.5">
+              <li>
+                <Link
+                  href="/blog"
+                  className="text-sm text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors"
+                >
+                  Aftercare blog
+                </Link>
+              </li>
               <li>
                 <span className="text-sm text-[var(--muted-foreground)]">
                   For professional use only.
