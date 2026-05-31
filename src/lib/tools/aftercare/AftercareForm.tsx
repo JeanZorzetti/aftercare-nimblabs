@@ -16,6 +16,7 @@ export function AftercareForm({ procedureSlug }: { procedureSlug: string }) {
       body: JSON.stringify({ procedureSlug, clinicName, tone: 'warm', language: 'en' }),
     })
     setLoading(false)
+    if (res.status === 401) { window.location.href = '/api/auth/signin?callbackUrl=/dashboard'; return }
     if (res.status === 402) { setUpgrade(true); return }
     if (!res.ok) { setError('Generation failed. Please try again.'); return }
     const data = await res.json()

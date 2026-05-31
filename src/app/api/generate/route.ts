@@ -13,6 +13,13 @@ export async function POST(req: NextRequest) {
   if (!procedure) return NextResponse.json({ error: 'Unknown procedure' }, { status: 400 })
 
   const userId = await getUserId()
+  // Require sign-in before any Groq call. Anonymous generation can't be metered
+  // reliably (no per-user row) and would let visitors burn the Groq budget for
+  // free. The free tier (3/day) lives behind a free account.
+  if (!userId) {
+    await track('paywall', { userId: null, meta: { procedureSlug, reason: 'auth_required' } })
+    return NextResponse.json({ error: 'auth_required', requireAuth: true }, { status: 401 })
+  }
   const isPro = await getIsPro(userId)
 
   const usage = await checkUsageLimit({ userId, isPro })

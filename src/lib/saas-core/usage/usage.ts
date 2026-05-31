@@ -13,9 +13,9 @@ function startOfTodayUTC(): Date {
 export async function checkUsageLimit({ userId, isPro }: { userId: string | null; isPro: boolean }): Promise<UsageResult> {
   if (isPro) return { allowed: true, remaining: Infinity }
   const limit = userId ? FREE_DAILY_LIMIT : ANON_LIMIT
-  if (!userId) {
-    return { allowed: true, remaining: limit }
-  }
+  // Count today's generations for this identity. For anonymous (userId null) this
+  // counts all null-userId rows together — a coarse global anon cap. Callers that
+  // need a hard guarantee should require auth (see /api/generate).
   const used = await prisma.generation.count({
     where: { userId, createdAt: { gte: startOfTodayUTC() } },
   })
