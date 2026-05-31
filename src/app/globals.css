@@ -1,26 +1,95 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
+  --font-serif: var(--font-serif);
   --font-mono: var(--font-geist-mono);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-accent: var(--accent);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+:root {
+  /* Sage Spa palette */
+  --background: #FBFAF8;
+  --foreground: #2C2A28;
+  --primary: #6B8E7F;
+  --primary-foreground: #FFFFFF;
+  --secondary: #EFEBE5;
+  --accent: #C9A98C;
+  --muted: #F5F1EB;
+  --muted-foreground: #7A736B;
+  --border: #E7E1D8;
+  --ring: #6B8E7F;
+  --success: #5B8C6E;
+  --destructive: #B5654A;
+  --radius: 0.75rem;
+}
+
+* {
+  box-sizing: border-box;
 }
 
 body {
-  background: var(--background);
+  background-color: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Headings use the serif font */
+h1, h2, h3, .font-serif {
+  font-family: var(--font-serif), Georgia, 'Times New Roman', serif;
+}
+
+/* Animations */
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .animate-rise {
+    animation: rise 0.5s ease-out forwards;
+  }
+  .animate-fade-in {
+    animation: fade-in 0.4s ease-out forwards;
+  }
+  .animate-rise-delay-1 {
+    animation: rise 0.5s 0.1s ease-out both;
+  }
+  .animate-rise-delay-2 {
+    animation: rise 0.5s 0.2s ease-out both;
+  }
+  .animate-rise-delay-3 {
+    animation: rise 0.5s 0.3s ease-out both;
+  }
+}
+
+/* Card hover elevation */
+.card-hover {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(44, 42, 40, 0.1);
 }
