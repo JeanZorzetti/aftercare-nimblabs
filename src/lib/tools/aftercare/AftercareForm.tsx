@@ -1,5 +1,10 @@
 'use client'
 import { useState } from 'react'
+import { Loader2, Download, Copy, CheckCircle, AlertCircle, ArrowUpRight } from 'lucide-react'
+import Link from 'next/link'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Card, CardContent } from '@/components/ui/card'
 import type { AftercareSheet } from './prompt'
 
 export function AftercareForm({ procedureSlug }: { procedureSlug: string }) {
@@ -8,58 +13,165 @@ export function AftercareForm({ procedureSlug }: { procedureSlug: string }) {
   const [sheet, setSheet] = useState<AftercareSheet | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [upgrade, setUpgrade] = useState(false)
+  const [copied, setCopied] = useState(false)
 
   async function onGenerate() {
-    setLoading(true); setError(null); setUpgrade(false)
+    setLoading(true)
+    setError(null)
+    setUpgrade(false)
     const res = await fetch('/api/generate', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ procedureSlug, clinicName, tone: 'warm', language: 'en' }),
     })
     setLoading(false)
-    if (res.status === 401) { window.location.href = '/api/auth/signin?callbackUrl=/dashboard'; return }
-    if (res.status === 402) { setUpgrade(true); return }
-    if (!res.ok) { setError('Generation failed. Please try again.'); return }
+    if (res.status === 401) {
+      window.location.href = '/api/auth/signin?callbackUrl=/dashboard'
+      return
+    }
+    if (res.status === 402) {
+      setUpgrade(true)
+      return
+    }
+    if (!res.ok) {
+      setError('Generation failed. Please try again.')
+      return
+    }
     const data = await res.json()
     setSheet(data.sheet)
   }
 
-  return (
-    <div className="rounded-xl border p-6">
-      <label className="block text-sm font-medium">Clinic name</label>
-      <input value={clinicName} onChange={(e) => setClinicName(e.target.value)} placeholder="Glow Aesthetics"
-        className="mt-1 w-full rounded-md border px-3 py-2" />
-      <button onClick={onGenerate} disabled={loading}
-        className="mt-4 rounded-md bg-gray-900 px-4 py-2 text-white disabled:opacity-50">
-        {loading ? 'Generating…' : 'Generate aftercare'}
-      </button>
-      {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
-      {upgrade && <p className="mt-3 text-sm">You hit the free limit. <a href="/dashboard" className="underline">Upgrade to Pro</a> for unlimited + branded PDF.</p>}
-      {sheet && <AftercareResultInline sheet={sheet} clinicName={clinicName} />}
-    </div>
-  )
-}
+  async function copyText() {
+    if (!sheet) return
+    const text = sheet.sections.map(s => `${s.heading}\n${s.items.map(i => `• ${i}`).join('\n')}`).join('\n\n')
+    await navigator.clipboard.writeText(`${sheet.title}\n\n${text}`)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
 
-function AftercareResultInline({ sheet, clinicName }: { sheet: AftercareSheet; clinicName: string }) {
   async function downloadPdf() {
     const res = await fetch('/api/pdf', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ sheet, clinicName }),
     })
     const blob = await res.blob()
     const url = URL.createObjectURL(blob)
-    const a = document.createElement('a'); a.href = url; a.download = 'aftercare.pdf'; a.click()
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'aftercare.pdf'
+    a.click()
     URL.revokeObjectURL(url)
   }
+
   return (
-    <div className="mt-6">
-      <h3 className="text-lg font-semibold">{sheet.title}</h3>
-      {sheet.sections.map((s, i) => (
-        <div key={i} className="mt-3">
-          <h4 className="font-medium">{s.heading}</h4>
-          <ul className="list-disc pl-5">{s.items.map((it, j) => <li key={j}>{it}</li>)}</ul>
+    <Card className="overflow-hidden">
+      <CardContent className="pt-8 pb-8">
+        <h2 className="font-serif text-xl font-semibold text-[var(--foreground)] mb-1">
+          Generate aftercare sheet
+        </h2>
+        <p className="text-sm text-[var(--muted-foreground)] mb-6">
+          Enter your clinic name and we'll create a personalised sheet in seconds.
+        </p>
+
+        {/* Form */}
+        <div className="space-y-3">
+          <div>
+            <label className="block text-sm font-medium text-[var(--foreground)] mb-1.5">
+              Clinic name
+            </label>
+            <Input
+              value={clinicName}
+              onChange={(e) => setClinicName(e.target.value)}
+              placeholder="Glow Aesthetics"
+              onKeyDown={(e) => e.key === 'Enter' && !loading && onGenerate()}
+            />
+          </div>
+          <Button
+            onClick={onGenerate}
+            disabled={loading}
+            size="lg"
+            className="w-full"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Generating…
+              </>
+            ) : (
+              'Generate aftercare sheet'
+            )}
+          </Button>
         </div>
-      ))}
-      <button onClick={downloadPdf} className="mt-4 rounded-md border px-4 py-2">Download PDF</button>
-    </div>
+
+        {/* Errors */}
+        {error && (
+          <div className="mt-4 flex items-start gap-2 text-sm text-[var(--destructive)] bg-red-50 rounded-xl px-4 py-3">
+            <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
+            {error}
+          </div>
+        )}
+
+        {/* Paywall / upgrade */}
+        {upgrade && (
+          <div className="mt-4 rounded-xl border border-[var(--border)] bg-[var(--secondary)] px-5 py-4">
+            <p className="text-sm font-medium text-[var(--foreground)]">Free limit reached</p>
+            <p className="text-sm text-[var(--muted-foreground)] mt-0.5">
+              You&apos;ve used your 3 free sheets for today.
+            </p>
+            <Link
+              href="/dashboard"
+              className="mt-3 inline-flex items-center gap-1 text-sm font-medium text-[var(--primary)] hover:underline"
+            >
+              Upgrade to Pro — $12/mo <ArrowUpRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+        )}
+
+        {/* Result */}
+        {sheet && (
+          <div className="mt-8 animate-rise">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-serif text-lg font-semibold text-[var(--foreground)]">{sheet.title}</h3>
+              <div className="flex gap-2">
+                <Button variant="outline" size="sm" onClick={copyText}>
+                  {copied ? (
+                    <><CheckCircle className="w-3.5 h-3.5 mr-1.5 text-[var(--success)]" /> Copied</>
+                  ) : (
+                    <><Copy className="w-3.5 h-3.5 mr-1.5" /> Copy</>
+                  )}
+                </Button>
+                <Button variant="default" size="sm" onClick={downloadPdf}>
+                  <Download className="w-3.5 h-3.5 mr-1.5" /> Download PDF
+                </Button>
+              </div>
+            </div>
+
+            <div className="space-y-5">
+              {sheet.sections.map((s, i) => (
+                <div key={i}>
+                  <h4 className="text-xs font-semibold uppercase tracking-widest text-[var(--primary)] mb-2">
+                    {s.heading}
+                  </h4>
+                  <ul className="space-y-1.5">
+                    {s.items.map((item, j) => (
+                      <li key={j} className="flex items-start gap-2 text-sm text-[var(--foreground)]">
+                        <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-[var(--accent)] shrink-0" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+
+            <p className="mt-6 text-xs text-[var(--muted-foreground)]">
+              Pro users get branded PDFs with your logo and clinic colours.{' '}
+              <Link href="/dashboard" className="text-[var(--primary)] hover:underline">Upgrade →</Link>
+            </p>
+          </div>
+        )}
+      </CardContent>
+    </Card>
   )
 }

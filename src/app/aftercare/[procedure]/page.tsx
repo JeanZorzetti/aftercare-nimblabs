@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import { getProcedure, PROCEDURE_SLUGS } from '@/lib/tools/aftercare/procedures'
 import { AftercareForm } from '@/lib/tools/aftercare/AftercareForm'
 import { buildFaqSchema, buildSoftwareAppSchema } from '@/lib/saas-core/seo/schema'
+import { Card, CardContent } from '@/components/ui/card'
 
 export function generateStaticParams() {
   return PROCEDURE_SLUGS.map((procedure) => ({ procedure }))
@@ -13,7 +14,7 @@ export async function generateMetadata({ params }: { params: Promise<{ procedure
   const p = getProcedure(procedure)
   if (!p) return {}
   return {
-    title: `${p.name} Aftercare Instructions Generator | AftercareGen`,
+    title: `${p.name} Aftercare Instructions Generator`,
     description: p.seoIntro,
     alternates: { canonical: `https://aftercare.nimblabs.com/aftercare/${p.slug}` },
   }
@@ -29,21 +30,50 @@ export default async function ProcedurePage({ params }: { params: Promise<{ proc
   const appSchema = buildSoftwareAppSchema({ name: `${p.name} Aftercare Generator`, url })
 
   return (
-    <main className="mx-auto max-w-2xl px-4 py-10">
+    <div>
+      {/* JSON-LD — SEO critical, must stay */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(appSchema) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} />
-      <h1 className="text-3xl font-bold">{p.name} Aftercare Instructions Generator</h1>
-      <p className="mt-3 text-gray-600">{p.seoIntro}</p>
-      <div className="mt-8"><AftercareForm procedureSlug={p.slug} /></div>
-      <section className="mt-12">
-        <h2 className="text-2xl font-semibold">Frequently asked questions</h2>
-        {p.faq.map((f, i) => (
-          <div key={i} className="mt-4">
-            <h3 className="font-medium">{f.q}</h3>
-            <p className="text-gray-600">{f.a}</p>
+
+      {/* Hero strip */}
+      <div className="bg-[var(--secondary)] border-b border-[var(--border)]">
+        <div className="mx-auto max-w-3xl px-6 py-12 animate-rise">
+          <span className="text-xs font-semibold uppercase tracking-widest text-[var(--primary)]">
+            Aftercare generator
+          </span>
+          {/* H1 with SEO keyword — preserved exactly */}
+          <h1 className="mt-2 font-serif text-4xl sm:text-5xl font-semibold text-[var(--foreground)] leading-tight">
+            {p.name} Aftercare Instructions Generator
+          </h1>
+          <p className="mt-4 text-[var(--muted-foreground)] leading-relaxed max-w-xl">
+            {p.seoIntro}
+          </p>
+        </div>
+      </div>
+
+      {/* Generator card — above the fold */}
+      <div className="mx-auto max-w-3xl px-6 py-12">
+        <AftercareForm procedureSlug={p.slug} />
+      </div>
+
+      {/* FAQ */}
+      <div className="bg-[var(--secondary)] border-t border-[var(--border)]">
+        <div className="mx-auto max-w-3xl px-6 py-14">
+          <h2 className="font-serif text-2xl font-semibold text-[var(--foreground)] mb-8">
+            Frequently asked questions
+          </h2>
+          <div className="space-y-4">
+            {p.faq.map((f, i) => (
+              <Card key={i}>
+                <CardContent className="pt-5 pb-5">
+                  <h3 className="font-medium text-[var(--foreground)]">{f.q}</h3>
+                  <p className="mt-2 text-sm text-[var(--muted-foreground)] leading-relaxed">{f.a}</p>
+                </CardContent>
+              </Card>
+            ))}
           </div>
-        ))}
-      </section>
-    </main>
+        </div>
+      </div>
+    </div>
   )
 }
