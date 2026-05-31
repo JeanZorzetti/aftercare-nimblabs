@@ -9,7 +9,7 @@ export interface SubscriptionUpdate {
 }
 
 export function reduceWebhookEvent(event: Stripe.Event): SubscriptionUpdate | null {
-  const obj = event.data.object as Record<string, unknown>
+  const obj = event.data.object as unknown as Record<string, unknown>
   const userId = (obj.metadata as Record<string, string> | undefined)?.userId
   if (!userId) return null
 
