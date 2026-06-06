@@ -46,9 +46,20 @@ export function SiteFooter() {
                 </Link>
               </li>
               <li>
-                <span className="text-sm text-[var(--muted-foreground)]">
-                  For professional use only.
-                </span>
+                <Link
+                  href="/privacy"
+                  className="text-sm text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors"
+                >
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/terms"
+                  className="text-sm text-[var(--muted-foreground)] hover:text-[var(--primary)] transition-colors"
+                >
+                  Terms of Service
+                </Link>
               </li>
               <li>
                 <span className="text-sm text-[var(--muted-foreground)]">
