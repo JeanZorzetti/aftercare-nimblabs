@@ -96,6 +96,13 @@ model SavedSheet {
   user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
+model Subscriber {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  source    String   @default("blog")
+  createdAt DateTime @default(now())
+}
+
 model ProcessedWebhook {
   id          String   @id
   processedAt DateTime @default(now())

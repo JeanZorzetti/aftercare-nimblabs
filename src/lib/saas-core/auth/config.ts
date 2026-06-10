@@ -22,6 +22,7 @@ export const authConfig: NextAuthConfig = {
   session: { strategy: 'database' },
   providers,
   trustHost: true,
+  pages: { signIn: '/signin' },
   callbacks: {
     async session({ session, user }) {
       if (session.user) session.user.id = user.id

@@ -5,10 +5,13 @@ import { checkUsageLimit } from '@/lib/saas-core/usage/usage'
 import { generateAftercare } from '@/lib/tools/aftercare/generate'
 import { getProcedure } from '@/lib/tools/aftercare/procedures'
 import { track } from '@/lib/saas-core/analytics/track'
+import { generateBodySchema } from '@/lib/tools/aftercare/validation'
+import { saveSheet } from '@/lib/tools/aftercare/history'
 
 export async function POST(req: NextRequest) {
-  const body = await req.json()
-  const { procedureSlug, clinicName, tone, language } = body as { procedureSlug: string; clinicName: string; tone: string; language: string }
+  const parsed = generateBodySchema.safeParse(await req.json().catch(() => null))
+  if (!parsed.success) return NextResponse.json({ error: 'invalid_request' }, { status: 400 })
+  const { procedureSlug, clinicName, tone, language } = parsed.data
   const procedure = getProcedure(procedureSlug)
   if (!procedure) return NextResponse.json({ error: 'Unknown procedure' }, { status: 400 })
 
@@ -36,6 +39,7 @@ export async function POST(req: NextRequest) {
       language: isPro ? language : 'en',
     })
     await track('generate', { userId, meta: { procedureSlug } })
+    await saveSheet({ userId, procedureSlug, clinicName, sheet })
     return NextResponse.json({ sheet, remaining: isPro ? null : usage.remaining - 1 })
   } catch {
     return NextResponse.json({ error: 'generation_failed' }, { status: 503 })

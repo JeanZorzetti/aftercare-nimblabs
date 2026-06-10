@@ -1,11 +1,13 @@
 'use client'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Loader2, Download, Copy, CheckCircle, AlertCircle, ArrowUpRight } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
 import type { AftercareSheet } from './prompt'
+
+const PENDING_KEY = 'aftercare:pending-generation'
 
 export function AftercareForm({ procedureSlug }: { procedureSlug: string }) {
   const [clinicName, setClinicName] = useState('')
@@ -14,19 +16,23 @@ export function AftercareForm({ procedureSlug }: { procedureSlug: string }) {
   const [error, setError] = useState<string | null>(null)
   const [upgrade, setUpgrade] = useState(false)
   const [copied, setCopied] = useState(false)
+  const resumed = useRef(false)
 
-  async function onGenerate() {
+  async function onGenerate(name = clinicName) {
     setLoading(true)
     setError(null)
     setUpgrade(false)
     const res = await fetch('/api/generate', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ procedureSlug, clinicName, tone: 'warm', language: 'en' }),
+      body: JSON.stringify({ procedureSlug, clinicName: name, tone: 'warm', language: 'en' }),
     })
     setLoading(false)
     if (res.status === 401) {
-      window.location.href = '/api/auth/signin?callbackUrl=/dashboard'
+      // Park the form state so we can resume the exact generation after sign-in,
+      // and send the user back HERE — not to the dashboard.
+      sessionStorage.setItem(PENDING_KEY, JSON.stringify({ procedureSlug, clinicName: name }))
+      window.location.href = `/signin?callbackUrl=${encodeURIComponent(`/aftercare/${procedureSlug}`)}`
       return
     }
     if (res.status === 402) {
@@ -40,6 +46,26 @@ export function AftercareForm({ procedureSlug }: { procedureSlug: string }) {
     const data = await res.json()
     setSheet(data.sheet)
   }
+
+  // Resume a generation interrupted by the sign-in redirect.
+  useEffect(() => {
+    if (resumed.current) return
+    resumed.current = true
+    const raw = sessionStorage.getItem(PENDING_KEY)
+    if (!raw) return
+    try {
+      const pending = JSON.parse(raw) as { procedureSlug: string; clinicName: string }
+      if (pending.procedureSlug !== procedureSlug) return
+      sessionStorage.removeItem(PENDING_KEY)
+      // One-time resume after the sign-in redirect — not a render-driven update.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setClinicName(pending.clinicName)
+      onGenerate(pending.clinicName)
+    } catch {
+      sessionStorage.removeItem(PENDING_KEY)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [procedureSlug])
 
   async function copyText() {
     if (!sheet) return
@@ -55,11 +81,16 @@ export function AftercareForm({ procedureSlug }: { procedureSlug: string }) {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ sheet, clinicName }),
     })
+    if (!res.ok) {
+      setError('PDF download failed. Please try again.')
+      return
+    }
+    const filename = res.headers.get('Content-Disposition')?.match(/filename="([^"]+)"/)?.[1] ?? 'aftercare.pdf'
     const blob = await res.blob()
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
-    a.download = 'aftercare.pdf'
+    a.download = filename
     a.click()
     URL.revokeObjectURL(url)
   }
@@ -71,7 +102,7 @@ export function AftercareForm({ procedureSlug }: { procedureSlug: string }) {
           Generate aftercare sheet
         </h2>
         <p className="text-sm text-[var(--muted-foreground)] mb-6">
-          Enter your clinic name and we'll create a personalised sheet in seconds.
+          Enter your clinic name and we&apos;ll create a personalised sheet in seconds.
         </p>
 
         {/* Form */}
@@ -88,7 +119,7 @@ export function AftercareForm({ procedureSlug }: { procedureSlug: string }) {
             />
           </div>
           <Button
-            onClick={onGenerate}
+            onClick={() => onGenerate()}
             disabled={loading}
             size="lg"
             className="w-full"

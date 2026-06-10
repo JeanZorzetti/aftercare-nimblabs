@@ -1,9 +1,12 @@
+import Link from 'next/link'
 import { auth } from '@/lib/saas-core/auth/session'
 import { prisma } from '@/lib/prisma'
 import { redirect } from 'next/navigation'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { CheckCircle, Sparkles } from 'lucide-react'
+import { CheckCircle, Sparkles, Download, FileText } from 'lucide-react'
+import { listSheets } from '@/lib/tools/aftercare/history'
+import { getProcedure } from '@/lib/tools/aftercare/procedures'
 
 const freeFeatures = [
   '3 aftercare sheets per day',
@@ -21,8 +24,11 @@ const proFeatures = [
 
 export default async function Dashboard() {
   const session = await auth()
-  if (!session?.user?.id) redirect('/api/auth/signin')
-  const sub = await prisma.subscription.findUnique({ where: { userId: session.user.id } })
+  if (!session?.user?.id) redirect('/signin?callbackUrl=/dashboard')
+  const [sub, recentSheets] = await Promise.all([
+    prisma.subscription.findUnique({ where: { userId: session.user.id } }),
+    listSheets(session.user.id, 10),
+  ])
   const isPro = sub?.status === 'active'
 
   return (
@@ -91,6 +97,53 @@ export default async function Dashboard() {
           )}
         </CardContent>
       </Card>
+
+      {/* Sheet history */}
+      <div className="mt-10">
+        <h2 className="font-serif text-xl font-semibold text-[var(--foreground)] mb-4">
+          Your recent sheets
+        </h2>
+        {recentSheets.length === 0 ? (
+          <Card>
+            <CardContent className="pt-6 pb-6 text-center">
+              <FileText className="w-6 h-6 text-[var(--muted-foreground)] mx-auto mb-2" />
+              <p className="text-sm text-[var(--muted-foreground)]">
+                No sheets yet. Generated sheets are saved here automatically.
+              </p>
+              <Link
+                href="/aftercare/botox"
+                className="mt-3 inline-flex items-center text-sm font-medium text-[var(--primary)] hover:underline"
+              >
+                Generate your first sheet →
+              </Link>
+            </CardContent>
+          </Card>
+        ) : (
+          <Card>
+            <CardContent className="pt-2 pb-2 divide-y divide-[var(--border)]">
+              {recentSheets.map((s) => (
+                <div key={s.id} className="flex items-center justify-between gap-4 py-3.5">
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium text-[var(--foreground)] truncate">{s.title}</p>
+                    <p className="text-xs text-[var(--muted-foreground)] mt-0.5">
+                      {getProcedure(s.procedureSlug)?.name ?? s.procedureSlug}
+                      {s.clinicName ? ` · ${s.clinicName}` : ''}
+                      {' · '}
+                      {s.createdAt.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    </p>
+                  </div>
+                  <a
+                    href={`/api/sheets/${s.id}/pdf`}
+                    className="inline-flex items-center gap-1.5 text-sm font-medium text-[var(--primary)] hover:underline shrink-0"
+                  >
+                    <Download className="w-3.5 h-3.5" /> PDF
+                  </a>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+        )}
+      </div>
 
       {/* Free plan teaser (only shown to free users) */}
       {!isPro && (

@@ -5,6 +5,8 @@ import { AuthorBio } from './author-bio'
 import { FaqAccordion } from './faq-accordion'
 import { TableOfContents } from './table-of-contents'
 import { RelatedArticles } from './related-articles'
+import { ProductCTAInline, ProductCTACard } from './product-cta'
+import { EmailCapture } from './email-capture'
 import { buildArticleSchema, buildBreadcrumbSchema, buildFaqSchema } from '@/lib/saas-core/seo/schema'
 import type { Article as RelatedArticle } from '@/lib/blog/types'
 
@@ -112,7 +114,21 @@ export function ArticleLayout({ post, children, toc, relatedPosts }: ArticleLayo
         <div className="flex gap-12">
           {/* Main content */}
           <article className="min-w-0 flex-1">
+            {/* Product CTA — visible before the reader commits to the full article */}
+            <div className="mb-8">
+              <ProductCTAInline relatedProcedures={post.relatedProcedures ?? []} />
+            </div>
+
             {children}
+
+            {/* Conversion moment — reader just finished a clinic-focused article */}
+            <div className="mt-12">
+              <ProductCTACard relatedProcedures={post.relatedProcedures ?? []} />
+            </div>
+
+            <div className="mt-8">
+              <EmailCapture source={`blog:${post.slug}`} />
+            </div>
 
             {/* FAQ */}
             {post.faq.length > 0 && (

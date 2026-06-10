@@ -18,6 +18,12 @@ export function SiteHeader() {
 
         {/* Nav */}
         <nav className="flex items-center gap-3">
+          <Link
+            href="/pricing"
+            className="text-sm text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors px-3 py-1.5 rounded-lg hover:bg-[var(--secondary)]"
+          >
+            Pricing
+          </Link>
           {session?.user ? (
             <Link
               href="/dashboard"
@@ -27,7 +33,7 @@ export function SiteHeader() {
             </Link>
           ) : (
             <Link
-              href="/api/auth/signin"
+              href="/signin"
               className="text-sm font-medium bg-[var(--primary)] text-white px-4 py-1.5 rounded-lg hover:opacity-90 transition-opacity"
             >
               Sign in
