@@ -1,4 +1,0 @@
-User-agent: *
-Allow: /
-
-Sitemap: https://aftercare.nimblabs.com/sitemap.xml

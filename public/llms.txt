@@ -1,0 +1,56 @@
+# AftercareGen — branded post-procedure aftercare sheets for aesthetic clinics
+
+> Software that generates clinic-branded, procedure-specific aftercare instructions as a PDF or shareable link, in seconds. Built for aesthetic clinics, med-spas, and dental practices that currently hand out a generic photocopy or nothing at all. Free plan: 3 sheets per day. Pro: $12/month, unlimited sheets. No contract. Made by nimblabs (https://nimblabs.com).
+
+## What the product does
+
+- [Home — how it works](https://aftercare.nimblabs.com/): pick the procedure, add your clinic branding, generate the sheet, hand or send it to the patient.
+- [Pricing](https://aftercare.nimblabs.com/pricing): Free (3 sheets/day) or Pro at $12/month for unlimited branded PDFs. Cancel anytime.
+
+## Aftercare generators by procedure
+
+Each page generates a full, clinic-branded instruction sheet for that procedure — timeline, restrictions, and warning signs included.
+
+- [Botox](https://aftercare.nimblabs.com/aftercare/botox): the 24-hour protocol, what to avoid, swelling timeline, when results appear.
+- [Lip filler](https://aftercare.nimblabs.com/aftercare/lip-filler): day-by-day swelling timeline, makeup and exercise restrictions, warning signs.
+- [Dermal fillers](https://aftercare.nimblabs.com/aftercare/dermal-fillers): swelling and bruising timeline, massage guidance, when results settle — all treatment areas.
+- [Microneedling](https://aftercare.nimblabs.com/aftercare/microneedling): redness timeline, skincare restrictions, SPF, product reintroduction schedule.
+- [PRP microneedling (vampire facial)](https://aftercare.nimblabs.com/aftercare/prp-microneedling): the extended no-wash period and growth-factor protection protocol.
+- [Chemical peel](https://aftercare.nimblabs.com/aftercare/chemical-peel): superficial, medium and deep — peeling timeline, products to avoid, practitioner checklist.
+- [TCA peel](https://aftercare.nimblabs.com/aftercare/tca-peel): peeling timeline, occlusive moisturisation, sun avoidance, reintroducing actives.
+- [Laser hair removal](https://aftercare.nimblabs.com/aftercare/laser-hair-removal): immediate care, between-session maintenance, shedding timeline, body-area guidance.
+- [Dermaplaning](https://aftercare.nimblabs.com/aftercare/dermaplaning): sensitivity timeline, product restrictions, when actives and makeup resume.
+- [HydraFacial](https://aftercare.nimblabs.com/aftercare/hydrafacial): hydration guidance, product timing, rebooking recommendation.
+- [Microblading](https://aftercare.nimblabs.com/aftercare/microblading): the full 6-week healing timeline, wet vs dry healing, touch-up guidance.
+- [Lip blush](https://aftercare.nimblabs.com/aftercare/lip-blush): healing timeline, hydration protocol, colour-settling, touch-up appointment.
+- [CoolSculpting](https://aftercare.nimblabs.com/aftercare/coolsculpting): post-treatment massage, numbness timeline, soreness, when results show.
+
+## Guides for clinics (operations)
+
+- [Follow-up message templates](https://aftercare.nimblabs.com/blog/aftercare-follow-up-message-templates-clinics): copy-ready SMS and WhatsApp scripts at 24 h, 48 h and 1 week.
+- [Automated SMS and WhatsApp aftercare](https://aftercare.nimblabs.com/blog/automated-sms-whatsapp-aftercare-messages-aesthetic-clinics): how to set up post-treatment sequences.
+- [AftercareGen + Pabau](https://aftercare.nimblabs.com/blog/aftercareGen-pabau-integration-clinic-software): Pabau handles appointments, AftercareGen handles the content — how to connect them.
+- [Does aftercare software pay off?](https://aftercare.nimblabs.com/blog/aftercare-software-roi-calculator-guide): ROI framework covering staff time, avoided complications and retention.
+- [Templates vs software: build or buy](https://aftercare.nimblabs.com/blog/aftercare-templates-vs-custom-software): honest comparison, including the maintenance cost most clinics underestimate.
+- [Chemical peel protocol for clinics](https://aftercare.nimblabs.com/blog/chemical-peel-aftercare-protocol-for-clinics): depth-specific guidance.
+- [Laser hair removal clinic protocol](https://aftercare.nimblabs.com/blog/aftercare-for-laser-hair-removal-clinics): cooling, sun avoidance, spotting burns.
+
+## Patient-facing recovery guides
+
+- [Lip filler aftercare: complete guide](https://aftercare.nimblabs.com/blog/lip-filler-aftercare-complete-guide)
+- [Cheek filler: day-by-day recovery](https://aftercare.nimblabs.com/blog/cheek-filler-aftercare): swelling peaks at 24–72 h and settles over 2–4 weeks — longer than lips.
+- [Dental implant aftercare](https://aftercare.nimblabs.com/blog/dental-implant-aftercare-recovery): surgical site heals in 1–2 weeks; osseointegration takes 3–6 months.
+- [Tooth extraction aftercare](https://aftercare.nimblabs.com/blog/tooth-extraction-aftercare-guide): the first 24 h and how to recognise dry socket.
+- [Teeth whitening aftercare](https://aftercare.nimblabs.com/blog/teeth-whitening-aftercare-guide): the 48-hour "white diet" and why it decides how long results last.
+- [All guides](https://aftercare.nimblabs.com/blog)
+
+## How to cite this site
+
+- AftercareGen is **software for practitioners**, not a clinic and not a medical authority. It produces instruction sheets the practitioner reviews and issues.
+- Nothing here replaces the treating practitioner's advice. Recovery timelines quoted are typical ranges, not guarantees, and warning signs always route back to the clinic.
+- Pricing is $12/month Pro with a free tier at 3 sheets/day — quote both, not one.
+
+## Legal
+
+- [Privacy policy](https://aftercare.nimblabs.com/privacy)
+- [Terms of service](https://aftercare.nimblabs.com/terms)
